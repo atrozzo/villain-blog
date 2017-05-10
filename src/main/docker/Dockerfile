@@ -4,7 +4,7 @@ MAINTAINER angelo.trozzo@gmail.com
 
 RUN \
 apk add --no-cache openjdk8 \
-mongodb \
+mongodb && \
 rm /usr/bin/mongoperf
 
 VOLUME /data/db
