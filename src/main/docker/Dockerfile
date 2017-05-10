@@ -3,8 +3,8 @@ FROM alpine:edge
 MAINTAINER angelo.trozzo@gmail.com
 
 RUN \
-apk add --no-cache openjdk8 && \
-mongodb && \
+apk add --no-cache openjdk8 \
+mongodb \
 rm /usr/bin/mongoperf
 
 VOLUME /data/db
