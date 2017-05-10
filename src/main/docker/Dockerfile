@@ -1,28 +1,9 @@
-FROM alpine:edge
+FROM frolvlad/alpine-oraclejdk8:slim
+VOLUME /tmp
+ADD supervillain-0.0.1-SNAPSHOT.jar app.jar
+RUN sh -c 'touch /app.jar'
+ENV JAVA_OPTS=""
 
-MAINTAINER angelo.trozzo@gmail.com
+EXPOSE 8085
 
-RUN \
-apk add --no-cache openjdk8 \
-mongodb && \
-rm /usr/bin/mongoperf
-
-VOLUME /data/db
-EXPOSE 27017 28017
-
-COPY files/UnlimitedJCEPolicyJDK8/* \
-  /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/
-
- CMD [ "mongod" ]
-
- VOLUME /tmp
- ADD supervillian-0.0.1-SNAPSHOT.jar app.jar
- RUN sh -c 'touch /app.jar'
- ENV JAVA_OPTS=""
- ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]
-
-
-
-
-
-
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar" ]

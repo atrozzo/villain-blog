@@ -128,17 +128,20 @@
 	</dependencies>
 
 	<build>
-
 		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<!-- tag::plugin[] -->
 			<plugin>
 				<groupId>com.spotify</groupId>
 				<artifactId>docker-maven-plugin</artifactId>
-				<version>0.4.13</version>
+				<version>0.4.11</version>
 				<configuration>
-					<imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+					<!--<imageName>${docker.image.prefix}:${project.artifactId}</imageName> harcode teh value -->
+					<imageName>villains:blog</imageName>
 					<dockerDirectory>src/main/docker</dockerDirectory>
-					<dockerHost>tcp://127.0.0.1:2376</dockerHost>
-
 					<resources>
 						<resource>
 							<targetPath>/</targetPath>
@@ -148,15 +151,8 @@
 					</resources>
 				</configuration>
 			</plugin>
+			<!-- end::plugin[] -->
 		</plugins>
-
-
-<!--		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>-->
 	</build>
 
 
