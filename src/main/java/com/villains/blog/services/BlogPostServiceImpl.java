@@ -109,15 +109,6 @@ public class BlogPostServiceImpl implements BlogPostService<Post> {
 
     }
 
-
-    static {
-        TextIndexDefinition textIndex = new TextIndexDefinition.TextIndexDefinitionBuilder()
-                .onField("body", 1F)
-                .onField("userId", 2F)
-                .build();
-
-    }
-
     @Override
     public List<Post> fullTextPostSearch(String textToSearch) {
 
