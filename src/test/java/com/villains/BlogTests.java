@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -161,17 +162,19 @@ public class BlogTests {
 	@Test
 	@WithMockUser(roles="ADMIN")
 	public void testShouldGETPostsByUserWithAuth() throws Exception {
-		this.mockMvc.perform(get("/villains/posts/user/{userId}", "secondUser")).andDo(print()).andExpect(status().isOk());
+		//this.mockMvc.perform(get("/villains/posts/user/{userId}", "secondUser")).andDo(print()).andExpect(status().isOk());
 
-		this.mockMvc.perform(get("/villains/posts/user/{userId}", "secondUser")
+		ResultActions res =  this.mockMvc.perform(get("/villains/posts/user/{userId}", "secondUser")
 		).andExpect(status().isOk())
 				.andExpect(content().contentType("application/json;charset=UTF-8"))
 				.andExpect(jsonPath("$[0].userId").exists())
 				.andExpect(jsonPath("$[0].userId").value("secondUser"))
-				.andExpect(jsonPath("$[0].body").value("This is a second post"));
+				.andExpect(jsonPath("$[0].body").value("This is a second post"))
+				.andExpect(jsonPath("$", hasSize(1)));
+
+
 
 	}
-
 
 	@WithMockUser(roles="ADMIN")
 	@Test
