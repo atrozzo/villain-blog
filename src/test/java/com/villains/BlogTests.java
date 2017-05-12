@@ -161,40 +161,6 @@ public class BlogTests {
 	}
 
 
-	/*@Test
-	public void testShouldnOtAccessPostWithNoAuth() throws Exception {
-		mockMvc.perform(get("/villains/posts").with(user("user"))).andExpect(status().isOk());
-
-		this.mockMvc.perform(get("/villains/posts")).andDo(print()).andExpect(status().isUnauthorized());
-
-	}*/
-
-
-
-	 //.andExpect(content().string(containsString("This is a second post")));
-
-
-	/*@Test
-	public void userNotFound() throws Exception {
-		mockMvc.perform(post("/george/bookmarks/")
-				.content(this.json(new Bookmark()))
-				.contentType(contentType))
-				.andExpect(status().isNotFound());
-	}
-
-	@Test
-	public void findById_TodoEntryNotFound_ShouldReturnHttpStatusCode404() throws Exception {
-		when(todoServiceMock.findById(1L)).thenThrow(new TodoNotFoundException(""));
-
-		mockMvc.perform(get("/api/todo/{id}", 1L))
-				.andExpect(status().isNotFound());
-
-		verify(todoServiceMock, times(1)).findById(1L);
-		verifyNoMoreInteractions(todoServiceMock);
-	}
-*/
-
-
 	private List<Post> createPosts(){
 		List<Post> posts = new ArrayList<>();
 
