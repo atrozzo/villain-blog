@@ -1,35 +1,50 @@
 package com.villains.blog.services;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.CommandResult;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
 import com.villains.blog.model.Post;
-import com.villains.repositories.BlogPostsReporistory;
+import com.villains.repositories.BlogPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.index.TextIndexDefinition;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.TextCriteria;
+import org.springframework.data.mongodb.core.query.TextQuery;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class BlogPostServiceImpl implements BlogPostService<Post> {
 
     @Autowired
-    private BlogPostsReporistory reporistory;
+    private BlogPostsRepository reporistory;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
 
+    private  final TextIndexDefinition textIndex = new TextIndexDefinition.TextIndexDefinitionBuilder()
+            .onField("body", 1F)
+            .onField("userId", 2F)
+            .build();
+
+
     @Autowired
-    public BlogPostServiceImpl ( BlogPostsReporistory rep){
+    public BlogPostServiceImpl (BlogPostsRepository rep){
         reporistory = rep;
     }
 
@@ -94,11 +109,28 @@ public class BlogPostServiceImpl implements BlogPostService<Post> {
 
     }
 
+
+    static {
+        TextIndexDefinition textIndex = new TextIndexDefinition.TextIndexDefinitionBuilder()
+                .onField("body", 1F)
+                .onField("userId", 2F)
+                .build();
+
+    }
+
     @Override
     public List<Post> fullTextPostSearch(String textToSearch) {
-        TextCriteria criteria = TextCriteria.forDefaultLanguage().matchingAny(textToSearch);
 
-        return reporistory.findAllBy(criteria);
+        mongoTemplate.indexOps(Post.class).ensureIndex(textIndex);
+        TextCriteria criteria = TextCriteria.forDefaultLanguage()
+                .matchingAny(textToSearch);
+
+        Query query = TextQuery.queryText(criteria)
+                .sortByScore()
+                .with(new PageRequest(0, 5));
+
+        return mongoTemplate.find(query, Post.class);
+
     }
 
 

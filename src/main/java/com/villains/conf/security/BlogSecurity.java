@@ -45,6 +45,7 @@ public class BlogSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/villains*//**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.PATCH, "/villains*//**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/villains*//**").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET, "/villains/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/villains/swagger-ui.html").permitAll()
                 .and()
                 .formLogin()

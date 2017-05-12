@@ -1,12 +1,20 @@
 version: "3"
 
 services:
+
+  ha_blog:
+    image: tutum/haproxy
+    ports:
+        - "8080:80"
+
   spring-boot:
     image: villains:blog
-    ports: [ "8085:8085"]
+    ports:
+        - "8085:8085"
+        
     depends_on:
           - db
      
   db:
     image: mongo
-    ports: ["27017:27017"]
+    ports: ["27017"]

@@ -24,7 +24,7 @@
 		<java.version>1.8</java.version>
 
 		<org.springframework.security.version>3.2.3.RELEASE</org.springframework.security.version>
-		<org.springframework.version>4.0.4.RELEASE</org.springframework.version>
+		<org.springframework.version>4.2.2.RELEASE</org.springframework.version>
 		<docker.image.prefix>villains</docker.image.prefix>
 		<springfox-version>2.5.0</springfox-version>
 
@@ -117,13 +117,21 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>4.2.2.RELEASE</version>
+            <version>${org.springframework.version}</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-web</artifactId>
-			<version>4.2.2.RELEASE</version>
+			<version>${org.springframework.version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+		<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-test -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<version>4.1.3.RELEASE</version>
+		</dependency>
+
 
 	</dependencies>
 

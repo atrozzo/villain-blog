@@ -10,7 +10,7 @@ import java.util.List;
 
 
 @RepositoryRestResource ( collectionResourceRel = "blog-villains", path = "blog-villains")
-public interface BlogPostsReporistory extends MongoRepository<Post,String> {
+public interface BlogPostsRepository extends MongoRepository<Post,String> {
 
     List<Post> findAllByUserId(@Param("userId") String userId);
     List<Post> findAllBy(TextCriteria criteria);
