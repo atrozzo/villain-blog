@@ -21,7 +21,7 @@ public interface BlogPostService<T> {
 
     public T createPost(@NotNull T body);
 
-    public void deletePost(@NotNull String postId);
+    public void deletePost(@NotNull String postId) throws Exception;
 
     public T updatePost(@NotNull T post);
 

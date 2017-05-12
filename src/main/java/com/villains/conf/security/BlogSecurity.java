@@ -48,6 +48,8 @@ public class BlogSecurity extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/villains/**").hasRole("ADMIN")
                 .antMatchers(HttpMethod.GET, "/villains/swagger-ui.html").permitAll()
                 .and()
+                .exceptionHandling().accessDeniedPage("/blog-error-page")
+                .and()
                 .formLogin()
                 .successHandler(authenticationSuccessHandler)
                 .failureHandler(new SimpleUrlAuthenticationFailureHandler())

@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,10 +25,13 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.startsWith;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -94,7 +98,7 @@ public class BlogTests {
 	}
 
 	 @Test
-	 public void testShouldDeleteAPost(){
+	 public void testShouldDeleteAPost() throws Exception {
 		 List<Post> posts = service.getPostsByUser("secondUser");
 		 Post update = posts.stream().findFirst().get();
 		 service.deletePost(update.getPostId());
@@ -131,11 +135,11 @@ public class BlogTests {
 	}
 
 
+	@Test
 	public void testShouldNotAccessPostsWithNoAuth() throws Exception {
 		this.mockMvc.perform(get("/villains/posts")).andDo(print()).andExpect(status().isUnauthorized());
 
 	}
-
 
 
 	@Test
@@ -143,13 +147,29 @@ public class BlogTests {
 	public void testShouldGETPostsWithAuth() throws Exception {
 		this.mockMvc.perform(get("/villains/posts")).andDo(print()).andExpect(status().isOk());
 
+		mockMvc.perform(get("/villains/posts")
+		).andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8"))
+				.andExpect(jsonPath("$[0].body").exists())
+				.andExpect(jsonPath("$[0].body").value("This is a first post"));
 	}
+
+
+
+
 
 
 	@Test
 	@WithMockUser(roles="ADMIN")
 	public void testShouldGETPostsByUserWithAuth() throws Exception {
 		this.mockMvc.perform(get("/villains/posts/user/{userId}", "secondUser")).andDo(print()).andExpect(status().isOk());
+
+		this.mockMvc.perform(get("/villains/posts/user/{userId}", "secondUser")
+		).andExpect(status().isOk())
+				.andExpect(content().contentType("application/json;charset=UTF-8"))
+				.andExpect(jsonPath("$[0].userId").exists())
+				.andExpect(jsonPath("$[0].userId").value("secondUser"))
+				.andExpect(jsonPath("$[0].body").value("This is a second post"));
 
 	}
 
@@ -159,6 +179,16 @@ public class BlogTests {
 		this.mockMvc.perform(get("/villains/posts/?userId=someone")).andDo(print()).andExpect(status().isNotFound());
 
 	}
+
+	@Test
+	@WithMockUser(roles="ADMIN")
+	public void testShouldNotDELETEPostByUnknownPostIdWithAuth() throws Exception {
+		this.mockMvc.perform(delete("/villains/posts/{id}", "1234")).andDo(print()).andExpect(status().isNotFound());
+
+	}
+
+
+
 
 
 	private List<Post> createPosts(){

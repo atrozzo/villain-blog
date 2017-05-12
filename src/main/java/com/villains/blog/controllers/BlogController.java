@@ -81,7 +81,7 @@ public class BlogController {
     }
     // delete a single post
     @RequestMapping(method=RequestMethod.DELETE, value="/posts/{id}")
-    public void delete(@PathVariable String id) {
+    public void delete(@PathVariable String id) throws Exception {
         postService.deletePost(id);
 
     }

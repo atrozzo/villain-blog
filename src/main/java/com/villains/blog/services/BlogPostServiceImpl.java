@@ -78,8 +78,13 @@ public class BlogPostServiceImpl implements BlogPostService<Post> {
     }
 
     @Override
-    public void deletePost(String postId) {
+    public void deletePost(String postId) throws Exception {
+
+        if (reporistory.findOne(postId) == null){
+               throw new Exception("Post id not found");
+        }
         reporistory.delete(postId);
+
     }
 
     @Override
