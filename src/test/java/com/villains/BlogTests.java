@@ -16,23 +16,22 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @RunWith(SpringRunner.class)
@@ -90,11 +89,16 @@ public class BlogTests {
 
 	@Test
 	public void testShouldUpdatePostInformation(){
-		String body = "This is a new body post.";
 		List<Post> posts = service.getPostsByUser("secondUser");
-		Post update = posts.stream().findFirst().get();
-		update.setBody(body);
-		assertThat(service.updatePost(update).getBody(),containsString(body) );
+		Optional<Post> update = posts.stream().findFirst();
+
+		if ( update.isPresent()) {
+			  update.get().setBody("This is an update value");
+			assertThat(service.updatePost(update.get()).getBody(), containsString("This is an update value"));
+		}
+		else{
+				fail();
+			}
 	}
 
 	 @Test
@@ -145,7 +149,6 @@ public class BlogTests {
 	@Test
 	@WithMockUser(roles="ADMIN")
 	public void testShouldGETPostsWithAuth() throws Exception {
-		this.mockMvc.perform(get("/villains/posts")).andDo(print()).andExpect(status().isOk());
 
 		mockMvc.perform(get("/villains/posts")
 		).andExpect(status().isOk())
@@ -153,10 +156,6 @@ public class BlogTests {
 				.andExpect(jsonPath("$[0].body").exists())
 				.andExpect(jsonPath("$[0].body").value("This is a first post"));
 	}
-
-
-
-
 
 
 	@Test
@@ -173,18 +172,18 @@ public class BlogTests {
 
 	}
 
-	@Test
-	@WithMockUser(roles="ADMIN")
-	public void testShouldNotGETPostsByUnknownUserWithAuth() throws Exception {
-		this.mockMvc.perform(get("/villains/posts/?userId=someone")).andDo(print()).andExpect(status().isNotFound());
 
-	}
-
-	@Test
 	@WithMockUser(roles="ADMIN")
+	@Test
 	public void testShouldNotDELETEPostByUnknownPostIdWithAuth() throws Exception {
-		this.mockMvc.perform(delete("/villains/posts/{id}", "1234")).andDo(print()).andExpect(status().isNotFound());
 
+		try {
+			this.mockMvc.perform(delete("/villains/posts/{id}", "1234")).
+					andDo(print()).andExpect(status().isOk());
+			fail( "Was expected an exception " );
+		} catch (Exception expectedException) {
+			assertThat(expectedException.getCause().getMessage(),is("Post id not found"));
+		}
 	}
 
 
